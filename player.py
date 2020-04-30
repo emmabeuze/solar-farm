@@ -22,10 +22,13 @@ class Player:
             # implement your policy here to return the load charged / discharged in the battery
             # below is a simple example
             
-            if time>20 and time<35:
-                return -8
-            else:
-                return +5
+            if time>=12 and time<=44:
+                return -self.battery_stock[11]/(32*self.dt)
+            elif time==0:
+                return 0
+            else :
+                return min(self.sun[time-1],self.capacity/self.dt-self.battery_stock[time-1]/self.dt)
+                
 
     def update_battery_stock(self, time,load):
             if abs(load) > self.max_load:
