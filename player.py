@@ -24,13 +24,17 @@ class Player:
             
                 
             
-            if time>=12 and time<=44:
-                #on regarde si les autres ont bcp vendu à t-1, si c'est le cas alors on vend à t toute notre production + ce qu'il y avait stocké dans la batterie
-                if self.imbalance["sale_cover"][time-1]>=0.8:
-                    return -self.max_load
-                #sinon on stocke au max et on vend le surplus
+            if time>=12 and time<=43:
+                #on stocke qd le prix est min
+                if self.prices["sale"][time-1]<=0.077:
+                    return min(self.max_load,max(0,2*self.sun[time-1]-self.sun[time-2]))
+                #on stocke rien qd le prix est moyen
+                elif self.prices["sale"][time-1]<=0.083:
+                    return 0
+                #le reste du temps on vend tout (production + stock)
                 else:
-                    return +self.max_load
+                    return -self.max_load
+                
 
             #on remplit entièrement la batterie achetant à 3 temps t pendant la nuit pour pouvoir le revendre plus cher le matin
             elif time in [0,2,4]:
