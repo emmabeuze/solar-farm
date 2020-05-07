@@ -22,12 +22,22 @@ class Player:
             # implement your policy here to return the load charged / discharged in the battery
             # below is a simple example
             
+                
+            
             if time>=12 and time<=44:
-                return -self.battery_stock[11]/(32*self.dt)
-            elif time==0:
+                #on regarde si les autres ont bcp vendu à t-1, si c'est le cas alors on vend à t toute notre production + ce qu'il y avait stocké dans la batterie
+                if self.imbalance["sale_cover"][time-1]>=0.8:
+                    return -self.max_load
+                #sinon on stocke au max et on vend le surplus
+                else:
+                    return +self.max_load
+
+            #on remplit entièrement la batterie achetant à 3 temps t pendant la nuit pour pouvoir le revendre plus cher le matin
+            elif time in [0,2,4]:
+                return +self.max_load
+                
+            else:
                 return 0
-            else :
-                return min(self.sun[time-1],self.capacity/self.dt-self.battery_stock[time-1]/self.dt)
                 
 
     def update_battery_stock(self, time,load):
