@@ -23,22 +23,33 @@ class Player:
             # below is a simple example
             
                 
-            
+            #actions de la journée
             if time>=12 and time<=43:
+                
                 #on stocke qd le prix est min
-                if self.prices["sale"][time-1]<=0.077:
-                    return min(self.max_load,max(0,2*self.sun[time-1]-self.sun[time-2]))
-                #on stocke rien qd le prix est moyen
-                elif self.prices["sale"][time-1]<=0.083:
+                if time >=21 and time <30 :
+                    return self.max_load/3
+                    
+                #le reste du temps on vend tout (production + stock) sur les 2 pics matin et soir
+                elif time<=15 :
+                    return -self.max_load*3/4
+                    
+                elif  time>=38 and time<40 :
+                    return -self.max_load/3
+                    
+                elif time>=40 :
+                    return -self.max_load*21/36
+                    
+                #on stocke rien et on ne vend pas de stock
+                else :
                     return 0
-                #le reste du temps on vend tout (production + stock)
-                else:
-                    return -self.max_load
+                
                 
 
             #on remplit entièrement la batterie achetant à 3 temps t pendant la nuit pour pouvoir le revendre plus cher le matin
-            elif time in [0,2,4]:
-                return +self.max_load
+            elif time>=0 and time <10 :
+                return +self.max_load*3/10
+                
                 
             else:
                 return 0
