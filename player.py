@@ -10,6 +10,8 @@ class Player:
         self.sun=[]
         self.bill = np.zeros(48) # prix de vente de l'électricité
         self.load= np.zeros(48) # chargement de la batterie (li)
+        self.penalty=np.zeros(48)
+        self.grid_relative_load=np.zeros(48)
         self.battery_stock = np.zeros(49) #a(t)
         self.capacity = 100
         self.max_load = 70
@@ -21,7 +23,6 @@ class Player:
             # TO DO:
             # implement your policy here to return the load charged / discharged in the battery
             # below is a simple example
-            
                 
             #actions de la journée
             if time>=12 and time<=43:
@@ -30,7 +31,7 @@ class Player:
                 if time >=21 and time <30 :
                     return self.max_load/3
                     
-                #le reste du temps on vend tout (production + stock) sur les 2 pics matin et soir
+                #le reste du temps on vend presque tout (production + stock) sur les 2 pics matin et soir
                 elif time<=15 :
                     return -self.max_load*3/4
                     
@@ -46,13 +47,12 @@ class Player:
                 
                 
 
-            #on remplit entièrement la batterie achetant à 3 temps t pendant la nuit pour pouvoir le revendre plus cher le matin
-            elif time>=0 and time <10 :
-                return +self.max_load*3/10
-                
-                
+            #on remplit à moitié la batterie tout au long de la nuit
             else:
-                return 0
+                return +self.max_load*3/30
+                
+                
+
                 
 
     def update_battery_stock(self, time,load):
@@ -83,7 +83,7 @@ class Player:
         
         return self.load[time]
     
-    def observe(self, t, sun, price, imbalance):
+    def observe(self, t, sun, price, imbalance,grid_relative_load):
         self.sun.append(sun)
         
         self.prices["purchase"].append(price["purchase"])
@@ -91,10 +91,13 @@ class Player:
 
         self.imbalance["purchase_cover"].append(imbalance["purchase_cover"])
         self.imbalance["sale_cover"].append(imbalance["sale_cover"])
+        self.grid_relative_load[t]=grid_relative_load
     
     def reset(self):
         self.load= np.zeros(48)
         self.bill = np.zeros(48)
+        self.penalty=np.zeros(48)
+        self.grid_relative_load=np.zeros(48)
         
         last_bat = self.battery_stock[-1]
         self.battery_stock = np.zeros(49)
@@ -103,4 +106,3 @@ class Player:
         self.sun=[]
         self.prices = {"purchase" : [],"sale" : []}
         self.imbalance={"purchase_cover":[], "sale_cover": []}
-
