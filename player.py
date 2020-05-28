@@ -33,7 +33,7 @@ class Player:
                     
                 #le reste du temps on vend presque tout (production + stock) sur les 2 pics matin et soir
                 elif time<=15 :
-                    return -self.max_load*3/4
+                    return -self.max_load*3/8
                     
                 elif  time>=38 and time<40 :
                     return -self.max_load/3
@@ -47,9 +47,19 @@ class Player:
                 
                 
 
-            #on remplit à moitié la batterie tout au long de la nuit
+            #on remplit à moitié la batterie tout au long de la nuit en achetant moins sur le pic 
+            elif time >= 44:
+                return +self.max_load*3/31
+            
+            elif time >=0 and time <=2:
+                return +self.max_load*3/60
+            
+            elif time >2 and time <12:
+                return +self.max_load*3/31
+                
             else:
-                return +self.max_load*3/30
+                return 0
+                
                 
                 
 
